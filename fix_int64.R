@@ -29,6 +29,7 @@ type(Sanford_AM)
 
 Sanford_AM$Connect_ID # here connectId is int32 and we have 10 missing values
 # CONNECTID TYPE INT64 WAS FORCED TO TYPE 32 ******
+# values above 4.2 billion can't be processed as int32
 
 Sanford_AM$Connect_ID2 # here connectId is string and we have 0 missing values
 
@@ -44,3 +45,14 @@ is.integer64 <- function(x){
 # convert function64 column to integer32
 df_mut <- data %>%
   mutate_if(is.integer64, as.integer)
+
+# FIXED! --------------------------------------------
+
+# option to edit int type in download
+Sanford_AM2 = bq_table_download(tb, bigint = c("integer64"))
+
+#length is 21 for a 10 digit value
+sapply(Sanford_AM2$Connect_ID[31], nchar)
+
+#length is 10 for a 10 digit value if coverted to string
+sapply(toString(Sanford_AM2$Connect_ID[31]), nchar)
